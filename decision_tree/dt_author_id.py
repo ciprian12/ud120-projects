@@ -10,6 +10,9 @@
     
 import sys
 from time import time
+
+from class_vis import prettyPicture
+
 sys.path.append("../tools/")
 from email_preprocess import preprocess
 
@@ -43,6 +46,7 @@ print "accuracy of %s" % accuracy
     0.9670 accurracy with 1% of features
     0.9789 accurracy with 10% of features
 '''
+
 
 #########################################################
 
