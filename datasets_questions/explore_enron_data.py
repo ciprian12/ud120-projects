@@ -28,10 +28,20 @@ with_salary = 0
 with_valid_email = 0
 with_no_payments = 0
 poi_with_no_payments = 0
+
+max_salary = 0
+max_id = ''
+
 for key in enron_data.keys():
     features = enron_data[key]
-    print "%3d %20s feature size %d" % (pers_count, key, len(features))
+    print "%3d %20s feature size %d salary %s" % (pers_count, key, len(features), features["salary"])
     pers_count += 1
+
+    if features["salary"] != "NaN":
+        salary = int(features["salary"])
+        if salary > max_salary:
+            max_salary = salary
+            max_id = key
 
     if features["poi"] == 1:
         poi_count += 1
@@ -47,6 +57,8 @@ for key in enron_data.keys():
     if features["total_payments"] == "NaN":
         with_no_payments += 1
 
+print "\n"
+print " max salary [%s] %d" % (max_id, max_salary)
 
 print "\n"
 print "poi count %d " % poi_count

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import math
 
 
 def outlierCleaner(predictions, ages, net_worths):
@@ -15,6 +16,21 @@ def outlierCleaner(predictions, ages, net_worths):
 
     ### your code goes here
 
-    
+    for index in xrange(0,90):
+
+        predicted = predictions[index]
+        age = ages[index]
+        net_worth = net_worths[index]
+        error = math.pow((predicted - net_worth), 2)
+
+        tuple = age, net_worth, error
+        cleaned_data.append(tuple)
+
+
+    ordered = sorted(cleaned_data, key=lambda x: (x[2], x[1], x[0]))
+
+    top = 81
+    cleaned_data = ordered[0:top]
+
     return cleaned_data
 
