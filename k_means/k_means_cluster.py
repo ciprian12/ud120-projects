@@ -4,16 +4,17 @@
     Skeleton code for k-means clustering mini-project.
 """
 
-
+from __future__ import division
 
 
 import pickle
 import numpy
 import matplotlib.pyplot as plt
 import sys
+
 sys.path.append("../tools/")
 from feature_format import featureFormat, targetFeatureSplit
-
+from sklearn import preprocessing
 
 
 
@@ -94,14 +95,27 @@ print "min_salary %d" % min_salary
 ### cluster here; create predictions of the cluster labels
 ### for the data and store them to a list called pred
 
+min_max_scaler = preprocessing.MinMaxScaler()
+data_train_minmax = min_max_scaler.fit_transform(data)
+finance_features_train_minmax = min_max_scaler.fit_transform(finance_features)
+
+print finance_features_train_minmax
+
+print data_train_minmax
+
+
+print "scaled salary %s" % ((200000. - min_salary)/(max_salary - min_salary))
+print "scaled stock %s" % ((1000000. - min_stock)/(max_stock - min_stock))
+
+
 from sklearn.cluster import KMeans
 
-kmeans = KMeans(n_clusters=2).fit(data)
-pred = kmeans.predict(data)
+kmeans = KMeans(n_clusters=2).fit(data_train_minmax)
+pred = kmeans.predict(data_train_minmax)
 
 ### rename the "name" parameter when you change the number of features
 ### so that the figure gets saved to a different file
 try:
-    Draw(pred, finance_features, poi, mark_poi=False, name="clusters.pdf", f1_name=feature_1, f2_name=feature_2)
+    Draw(pred, finance_features_train_minmax, poi, mark_poi=False, name="clusters.pdf", f1_name=feature_1, f2_name=feature_2)
 except NameError:
     print "no predictions object named pred found, no clusters to plot"
