@@ -13,8 +13,8 @@ authors_file = "../text_learning/your_email_authors.pkl"
 word_data = pickle.load( open(words_file, "r"))
 authors = pickle.load( open(authors_file, "r") )
 
-
-
+from time import time
+from sklearn import tree
 ### test_size is the percentage of events assigned to the test set (the
 ### remainder go into training)
 ### feature matrices changed to dense representations for compatibility with
@@ -29,6 +29,7 @@ features_train = vectorizer.fit_transform(features_train)
 features_test  = vectorizer.transform(features_test).toarray()
 
 
+
 ### a classic way to overfit is to use a small number
 ### of data points and a large number of features;
 ### train on only 150 events to put ourselves in this regime
@@ -39,5 +40,34 @@ labels_train   = labels_train[:150]
 
 ### your code goes here
 
+clf = tree.DecisionTreeClassifier(min_samples_split=40)
 
+t0 = time()
+clf = clf.fit(features_train, labels_train)
+print "training time:", round(time()-t0, 3), "s"
 
+t1 = time()
+pred = clf.predict(features_test)
+print "prediction time:", round(time()-t1, 3), "s"
+
+accuracy = clf.score(features_test, labels_test)
+
+print "accuracy of %s" % accuracy
+
+ft_count = 0
+ft_max = 0
+ft_max_id = 0
+ft_count2 = 0
+for ft in clf.feature_importances_:
+    if ft > 0.2:
+        print ft
+        ft_count2 += 1
+        if ft > ft_max:
+            ft_max = ft
+            ft_max_id = ft_count
+    ft_count += 1
+
+print "max [%s] = %s" % (ft_max_id, ft_max)
+print " #features >0.2 = %s" % ft_count2
+
+print vectorizer.get_feature_names()[ft_max_id]
