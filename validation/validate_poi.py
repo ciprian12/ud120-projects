@@ -28,5 +28,34 @@ labels, features = targetFeatureSplit(data)
 
 
 ### it's all yours from here forward!  
+from sklearn import tree
+from time import time
 
+from sklearn.model_selection import train_test_split
+
+features_train, features_test, labels_train, labels_test = train_test_split( features, labels, test_size=0.3, random_state=42)
+
+# clf = tree.DecisionTreeClassifier(min_samples_split=40)
+clf = tree.DecisionTreeClassifier()
+
+# features_train = features
+# features_test = features
+
+# labels_train = labels
+# labels_test = labels
+
+t0 = time()
+clf = clf.fit(features_train, labels_train)
+print "training time:", round(time()-t0, 3), "s"
+
+accuracy = clf.score(features_train, labels_train)
+print "accuracy of %s" % accuracy
+
+
+t1 = time()
+pred = clf.predict(features_test)
+print "prediction time:", round(time()-t1, 3), "s"
+
+accuracy = clf.score(features_test, labels_test)
+print "accuracy of %s" % accuracy
 
