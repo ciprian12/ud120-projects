@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# coding=utf-8
 
 import sys
 import pickle
@@ -12,14 +13,96 @@ from tester import dump_classifier_and_data
 ### The first feature must be "poi".
 features_list = ['poi','salary'] # You will need to use more features
 
+'''
+financial features:
+    ['salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus',
+    'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses', 'exercised_stock_options',
+    'other', 'long_term_incentive', 'restricted_stock', 'director_fees']
+
+email features:
+    ['to_messages', 'email_address', 'from_poi_to_this_person', 'from_messages',
+    'from_this_person_to_poi',
+    'shared_receipt_with_poi']
+(units are generally number of emails messages; notable exception is ‘email_address’, which is a text string)
+
+POI label: [‘poi’]
+(boolean, represented as integer)
+'''
+
+NAN_value = 'NaN'
+
+"""
+inspired by
+https://github.com/sebasibarguen/udacity-nanodegree-machinelearning
+https://github.com/sebasibarguen/udacity-nanodegree-machinelearning/blob/master/final_project/poi_id.py
+"""
+
+
 ### Load the dictionary containing the dataset
-with open("final_project_dataset.pkl", "r") as data_file:
-    data_dict = pickle.load(data_file)
+# with open("final_project_dataset.pkl", "r") as data_file:
+#     data_dict = pickle.load(data_file)
 
 ### Task 2: Remove outliers
+
+def load_preprocess_data():
+    """
+    Loads and removes outliers from the dataset. Returns the data as a
+    Python dictionary.
+    """
+
+    ### load the dictionary containing the dataset
+    data_dict = pickle.load(open("final_project_dataset.pkl", "r") )
+
+    ### removing outliers
+    outliers = ['TOTAL', 'THE TRAVEL AGENCY IN THE PARK']
+    # 'LOCKHART EUGENE E' all values are NaN
+
+    for outlier in outliers:
+        data_dict.pop(outlier, 0)
+
+    ### replace 'NaN' with 0
+    for key in data_dict.keys():
+        for skey in data_dict[key].keys():
+            if data_dict[key][skey] == NAN_value:
+                data_dict[key][skey] = 0
+
+    return data_dict
+
+### Load the dictionary containing the dataset
+data_dict = load_preprocess_data()
+
+
+
+def scale_features(features):
+    """
+    Scale features using the Min-Max algorithm
+    """
+
+    # scale features via min-max
+    from sklearn import preprocessing
+    scaler = preprocessing.MinMaxScaler()
+    features = scaler.fit_transform(features)
+
+    return features
+
+
+
 ### Task 3: Create new feature(s)
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
+
+
+#
+poi_count = 0
+for key in my_dataset.keys():
+    print key
+    print my_dataset[key]
+    if my_dataset[key]['poi'] == True:
+        poi_count += 1
+
+print "data set entries: %d" % len(data_dict.keys())
+print "total poi: %d" % poi_count
+
 
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, features_list, sort_keys = True)
